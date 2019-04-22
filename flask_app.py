@@ -116,8 +116,10 @@ def monitoring_whole():
          slack_data={"text":"https://www.intuit.com, response time is more than threshold please check the web site performance and resources"}
          slack_messages(slack_data)
 
+    else  :
+       print("all looks good ") 
     
-    elif   firstevent_url2 > 0.3 :              
+    if   firstevent_url2 > 0.3 :              
          slack_data={"text":"https://en.wikipedia.org/wiki/Intuit, response time is more than  threshold  please check the web site performance and resources"}
          slack_messages(slack_data)
  
