@@ -43,6 +43,24 @@ end = time.time()
 nf.close()
 """
 
+# Authentication for user filing issue (must have read/write access to
+# repository to add issue to)
+USERNAME = 'udayradhika'
+PASSWORD = 'd9a5eee4961340145d256c011e2a311185980c9d'
+
+# The repository to add this issue to
+REPO_OWNER = 'udayradhika'
+REPO_NAME = 'webmonitoring'
+
+username = 'udayradhika'
+token = 'd9a5eee4961340145d256c011e2a311185980c9d'
+
+
+
+
+
+
+
 app = Flask(__name__)
 
 mysql = MySQL()
@@ -67,6 +85,7 @@ url_1 = "https://www.intuit.com"
 
 url_2 = "https://en.wikipedia.org/wiki/Intuit"
 
+responseissue = " Site response crossed threshold"
 
 def shell_command(query,IsShell=None):
       #logging.info ("< ------ Running Command ------ >")
@@ -82,6 +101,28 @@ def shell_command(query,IsShell=None):
  # Set the webhook_url to the one provided by Slack when you create the webhook at https://my.slack.com/services/new/incoming-webhook/
 webhook_url_final = 'https://hooks.slack.com/services/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'
 
+
+def make_github_issue(title, body=None, labels=None):
+    '''Create an issue on github.com using the given parameters.'''
+    # Our url to create issues via POST
+    url = 'https://api.github.com/repos/%s/%s/issues' % (REPO_OWNER, REPO_NAME)
+    headers = {'Authorization': 'token ' + token}
+
+    login = requests.get('https://api.github.com/user', headers=headers)
+    # Create an authenticated session to create the issue
+    session = requests.Session()
+    session.auth = (USERNAME, PASSWORD)
+    # Create our issue
+    issue = {'title': title,
+             'body': body,
+             'labels': labels}
+    # Add the issue to our repository
+    r = session.post(login, json.dumps(issue))
+    if r.status_code == 201:
+        print ('Successfully created Issue {0:s}'.format(title))
+    else:
+        print ('Could not create Issue {0:s}'.format(title))
+        print ('Response:', r.content)
 
 def slack_messages(slack_m):
   response = requests.post(
@@ -111,17 +152,20 @@ def monitoring_whole():
     #cursor.execute(query)
     connection.commit()
     
-    if firstevent_url1 > 0.3:
+    if firstevent_url1 > 0.1:
          
          slack_data={"text":"https://www.intuit.com, response time is more than threshold please check the web site performance and resources"}
          slack_messages(slack_data)
+         
+         make_github_issue(url1, slack_data, responseissue)
 
     else  :
        print("all looks good ") 
     
-    if   firstevent_url2 > 0.3 :              
+    if   firstevent_url2 > 0.1 :              
          slack_data={"text":"https://en.wikipedia.org/wiki/Intuit, response time is more than  threshold  please check the web site performance and resources"}
          slack_messages(slack_data)
+         make_github_issue(url2, slack_data, responseissue)
  
     else  :
        print("all looks good ")
