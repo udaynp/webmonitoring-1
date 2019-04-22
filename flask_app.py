@@ -18,7 +18,9 @@ curl -XGET "http://localhost:9200/site-monitoring/_search"
 https://api.slack.com/apps/AJ037EAJU/incoming-webhooks?success=1
 curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"}' https://hooks.slack.com/services/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
 curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"}' https://hooks.slack.com/services/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
-
+https://stackoverflow.com/questions/17622439/how-to-use-github-api-token-in-python-for-requesting
+https://developer.github.com/v3/
+https://2.python-requests.org//en/master/user/quickstart/
 """
 
 """
@@ -43,17 +45,12 @@ end = time.time()
 nf.close()
 """
 
-# Authentication for user filing issue (must have read/write access to
-# repository to add issue to)
-USERNAME = 'udayradhika'
-PASSWORD = 'd9a5eee4961340145d256c011e2a311185980c9d'
-
-# The repository to add this issue to
-REPO_OWNER = 'udayradhika'
-REPO_NAME = 'webmonitoring'
-
 username = 'udayradhika'
-token = 'd9a5eee4961340145d256c011e2a311185980c9d'
+token = '9ee3129632ccd9bd5b69892a3ccde510e9153a3a'
+#token = 'coppergate51'
+
+headers = {'Authorization': 'token ' + token}
+repo_name = 'webmonitoring'
 
 
 
@@ -102,27 +99,19 @@ def shell_command(query,IsShell=None):
 webhook_url_final = 'https://hooks.slack.com/services/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'
 
 
-def make_github_issue(title, body=None, labels=None):
-    '''Create an issue on github.com using the given parameters.'''
-    # Our url to create issues via POST
-    url = 'https://api.github.com/repos/%s/%s/issues' % (REPO_OWNER, REPO_NAME)
-    headers = {'Authorization': 'token ' + token}
+def post_github_issue(title, body=None, labels=["bug"]):
+      '''https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/'''
 
-    login = requests.get('https://api.github.com/user', headers=headers)
-    # Create an authenticated session to create the issue
-    session = requests.Session()
-    session.auth = (USERNAME, PASSWORD)
-    # Create our issue
-    issue = {'title': title,
-             'body': body,
-             'labels': labels}
-    # Add the issue to our repository
-    r = session.post(login, json.dumps(issue))
-    if r.status_code == 201:
+      payload = { "title": title,"body": body,"labels": labels}
+
+      login = requests.post('https://api.github.com/'+'repos/'+username+'/'+repo_name+'/issues', auth=(username,token), data=json.dumps(payload))
+      print(login.json())
+      if login.status_code == 201:
         print ('Successfully created Issue {0:s}'.format(title))
-    else:
+      else:
         print ('Could not create Issue {0:s}'.format(title))
-        print ('Response:', r.content)
+        print ('Response:', login.content)
+
 
 def slack_messages(slack_m):
   response = requests.post(
@@ -154,21 +143,22 @@ def monitoring_whole():
     
     if firstevent_url1 > 0.1:
          
-         slack_data={"text":"https://www.intuit.com, response time is more than threshold please check the web site performance and resources"}
+         post_message="response time is more than threshold please check the web site performance and resources"
+         slack_data={"text":url_1+"   "+post_message}
          slack_messages(slack_data)
          
-         make_github_issue(url1, slack_data, responseissue)
+         post_github_issue(title=post_message, body= url_1+"   "+post_message)
 
     else  :
-       print("all looks good ") 
+       print(" Url "+url_1+" response is looks good ") 
     
     if   firstevent_url2 > 0.1 :              
-         slack_data={"text":"https://en.wikipedia.org/wiki/Intuit, response time is more than  threshold  please check the web site performance and resources"}
+         slack_data={"text":url_2+"   "+post_message}
          slack_messages(slack_data)
-         make_github_issue(url2, slack_data, responseissue)
+         post_github_issue(title=post_message, body= url_2+"   "+post_message)
  
     else  :
-       print("all looks good ")
+       print(" Url "+url_2+" response is looks good ")
        
        
     return render_template(
