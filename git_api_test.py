@@ -2,7 +2,7 @@ import json
 import requests
 
 username = 'udayradhika'
-token = 'e1c6c14d722263197111e4573f25784cf83dda2a'
+token = 'a6d385f502acdc50e19864e45d163ebe32a23ee6'
 #token = 'coppergate51'
 
 headers = {'Authorization': 'token ' + token}
@@ -39,9 +39,9 @@ def make_github_issue(title, body=None, labels=None):
 #make_github_issue(title="url", body="test", labels="response")
 
 
-def post_github_issue(title, body=None, labels=None):
+def post_github_issue(title, body=None, labels=["bug"]):
 
-      payload = { "title": "response time is more ","body": "response time is more for url1","labels": ["bug"]}
+      payload = { "title": title,"body": body,"labels": labels}
 
       login = requests.post('https://api.github.com/'+'repos/'+username+'/'+repo_name+'/issues', auth=(username,token), data=json.dumps(payload))
       print(login.json())
@@ -52,5 +52,5 @@ def post_github_issue(title, body=None, labels=None):
         print ('Response:', login.content)
 
 
-post_github_issue(title="response is more for url", body= "response time is more for url1", labels=["response monitoring","bug"])
+post_github_issue(title="response is more for url", body= "response time is more for url1")
 
