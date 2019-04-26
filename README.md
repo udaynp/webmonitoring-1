@@ -12,7 +12,6 @@ We have everything handled with Python.
 https://networklore.com/start-task-with-flask/
 
 
-https://www.daniweb.com/programming/software-development/threads/259751/function-returning-a-value-multi-thread. 
 
 
 nohup sh crafts_demo_site.sh > /tmp/crafts_demo_site.out 2>&1 &
