@@ -12,7 +12,12 @@ from time import time
 import json
 import threading
 import queue
+from threading import Timer
 
+"""
+https://buildmedia.readthedocs.org/media/pdf/flask-docs-ja/latest/flask-docs-ja.pdf
+
+"""
 
 
 username = 'udayradhika'
@@ -22,6 +27,7 @@ token = '9ee3129632ccd9bd5b69892a3ccde510e9153a3a'
 headers = {'Authorization': 'token ' + token}
 repo_name = 'webmonitoring'
 
+app.logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
 
@@ -157,17 +163,17 @@ def flask_thread_rend(firstevent_url1,firstevent_url2,last_update_time):
         )
 
 
-
 @app.route("/", methods=['GET'])
 def monitoring_whole():
+
+    logging.info(" response test is loading ")
     firstevent_url1 = thread_call_url(url_1)
     firstevent_url2 = thread_call_url(url_2)
     last_update_time = thread_call_time()
-    mysql_insert(url_1,firstevent_url1,last_update_time)
+    mysql_insert(url_1, firstevent_url1, last_update_time)
     mysql_insert(url_2, firstevent_url2, last_update_time)
-    threshold_check(url_1,firstevent_url1)
+    threshold_check(url_1, firstevent_url1)
     threshold_check(url_2, firstevent_url2)
-
     #flask_thread_rend(firstevent_url1,firstevent_url2,last_update_time)
 
     return render_template(
@@ -181,11 +187,10 @@ def monitoring_whole():
 
 
 if __name__ == '__main__':
-    log_dir = os.path.join(base_dir_app_log,"logs/webmonitoring")
-    logfile = os.path.join(log_dir, "Webmonitoring_flask" + datetime.now().strftime('_monitoring_log_%Y_%m_%d_%I_%M_%S.log'))
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filename=logfile, level=logging.INFO)
-    sprint ('-------------------------------- START ---------------------------------')
-    logging.info ('< --------- START ---------------------- >')
+    log_dir = os.path.join(base_dir_app_log, "logs/webmonitoring")
+    logfile = os.path.join(log_dir,"Webmonitoring_flask" + datetime.now().strftime('_monitoring_log_%Y_%m_%d_%I_%M_%S.log'))
+    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',filename=logfile, level=logging.INFO)
+    sprint('-------------------------------- START ---------------------------------')
+    logging.info('< --------- START ---------------------- >')
 
-
-    app.run()
+    app.run(debug=True)
