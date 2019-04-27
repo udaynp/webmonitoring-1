@@ -13,6 +13,7 @@ import json
 import threading
 import queue
 from threading import Timer
+from logging.handlers import RotatingFileHandler
 
 """
 https://buildmedia.readthedocs.org/media/pdf/flask-docs-ja/latest/flask-docs-ja.pdf
@@ -27,11 +28,11 @@ token = '9ee3129632ccd9bd5b69892a3ccde510e9153a3a'
 headers = {'Authorization': 'token ' + token}
 repo_name = 'webmonitoring'
 
-app.logger.setLevel(logging.INFO)
+
 
 app = Flask(__name__)
 
-
+#app.logger.setLevel(logging.INFO)
 
 
 mysql = MySQL()
@@ -186,11 +187,21 @@ def monitoring_whole():
         )
 
 
+
+
 if __name__ == '__main__':
     log_dir = os.path.join(base_dir_app_log, "logs/webmonitoring")
     logfile = os.path.join(log_dir,"Webmonitoring_flask" + datetime.now().strftime('_monitoring_log_%Y_%m_%d_%I_%M_%S.log'))
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',filename=logfile, level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',filename=logfile, level=logging.DEBUG)
     sprint('-------------------------------- START ---------------------------------')
     logging.info('< --------- START ---------------------- >')
 
+    app.logger.info("Logging is set up.")
+
+
+
     app.run(debug=True)
+    
+
+
+

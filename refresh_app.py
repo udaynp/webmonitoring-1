@@ -7,4 +7,5 @@ try:
     res.raise_for_status()
     print(res)
 except Exception as exc:
+    exit(1)
     print('There was a problem: %s' % (exc))
