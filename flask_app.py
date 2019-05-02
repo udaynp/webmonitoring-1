@@ -15,6 +15,26 @@ import queue
 from threading import Timer
 from logging.handlers import RotatingFileHandler
 
+
+app = Flask(__name__)
+base_dir_app_log="/Users/upakalapati/Downloads/crafts_demo_logs/"
+app.logger.setLevel(logging.DEBUG)  # use the native logger of flask
+app.logger.disabled = False
+handler = logging.handlers.RotatingFileHandler(
+    base_dir_app_log+datetime.now().strftime('web_monitoring_log_%Y_%m_%d_%I_%M_%S.log'),
+    'a',
+    maxBytes=1024 * 1024 * 100,
+    backupCount=20
+    )
+
+formatter = logging.Formatter(\
+    "%(asctime)s - %(levelname)s - %(name)s: \t%(message)s")
+handler.setFormatter(formatter)
+app.logger.addHandler(handler)
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.DEBUG)
+log.addHandler(handler)
+
 """
 https://buildmedia.readthedocs.org/media/pdf/flask-docs-ja/latest/flask-docs-ja.pdf
 
@@ -23,7 +43,7 @@ https://buildmedia.readthedocs.org/media/pdf/flask-docs-ja/latest/flask-docs-ja.
 logging.basicConfig(level=logging.INFO)
 
 username = 'udayradhika'
-token = '9ee3129632ccd9bd5b69892a3ccde510e9153a3a'
+token = 'f7adca866868c89ff7f4518ba1a58274d939f17e'
 #token = 'coppergate51'
 
 headers = {'Authorization': 'token ' + token}
@@ -31,7 +51,7 @@ repo_name = 'webmonitoring'
 
 
 
-app = Flask(__name__)
+
 
 #app.logger.setLevel(logging.INFO)
 
@@ -52,7 +72,7 @@ url_2 = "https://en.wikipedia.org/wiki/Intuit"
 webhook_url_final = 'https://hooks.slack.com/services/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'
 responseissue = " Site response crossed threshold"
 
-base_dir_app_log="/Users/upakalapati/Downloads/crafts_demo_logs/"
+
 
 
 def sprint(message):
@@ -76,12 +96,15 @@ def post_github_issue(title, body=None, labels=["bug"]):
 
       payload = { "title": title,"body": body,"labels": labels}
       login = requests.post('https://api.github.com/'+'repos/'+username+'/'+repo_name+'/issues', auth=(username,token), data=json.dumps(payload))
-      sprint(login.json())
+      print(login.json())
       if login.status_code == 201:
         print ('Successfully created Issue {0:s}'.format(title))
+        app.logger.info ('Successfully created Issue {0:s}'.format(title))
       else:
         print ('Could not create Issue {0:s}'.format(title))
+        app.logger.info  ('Could not create Issue {0:s}'.format(title))
         print ('Response:', login.content)
+        app.logger.info ('Response:', login.content)
 
 
 def slack_messages(slack_m):
@@ -105,7 +128,7 @@ def time_now(test, q):
     last_update_time = strftime("%Y-%m-%d %H:%M:%S")
 
     sprint("now" + test + str(last_update_time))
-    logging.info("time now" + str(last_update_time))
+    app.logger.info("time now" + str(last_update_time))
 
     q.put(last_update_time)
 
@@ -115,7 +138,7 @@ def thread_call_url(url):
     threading.Thread(target=url_resp, args=(url, q)).start()
     firstevent_url = q.get()
     sprint(" Url " + url + "  response time is   :" + str(firstevent_url)+"\n")
-    logging.info(" Url " + url + "   response time is   :" + str(firstevent_url)+"\n")
+    app.logger.info(" Url " + url + "   response time is   :" + str(firstevent_url)+"\n")
     return firstevent_url
 
 
@@ -124,7 +147,7 @@ def thread_call_time():
     threading.Thread(target=time_now, args=("  Time is  :", q)).start()
     last_update_time = q.get()
     sprint(" Time when response time collected " + str(last_update_time)+"\n")
-    logging.info(" Time when response time collected " + str(last_update_time)+"\n")
+    app.logger.info(" Time when response time collected " + str(last_update_time)+"\n")
     return last_update_time
 
 def mysql_insert(url, firstevent_url, last_update_time):
@@ -137,7 +160,7 @@ def mysql_insert(url, firstevent_url, last_update_time):
     connection.commit()
 
     sprint(" for Url " + url + "   response time is   :" + str(firstevent_url) + "Mysql insertion is done \n")
-    logging.info(" for Url " + url + "   response time is   :" + str(firstevent_url) + "Mysql insertion is done \n")
+    app.logger.info(" for Url " + url + "   response time is   :" + str(firstevent_url) + "Mysql insertion is done \n")
 
 def threshold_check(url,firstevent_url):
     if firstevent_url > 0.3:
@@ -150,7 +173,7 @@ def threshold_check(url,firstevent_url):
 
     else:
         sprint(" Url " + url + " response is looks good ")
-        logging.info(" Url " + url + " response is looks good ")
+        app.logger.info(" Url " + url + " response is looks good ")
 
 
 def flask_thread_rend(firstevent_url1,firstevent_url2,last_update_time):
@@ -191,17 +214,14 @@ def monitoring_whole():
 
 
 if __name__ == '__main__':
-    log_dir = os.path.join(base_dir_app_log, "logs/webmonitoring")
-    logfile = os.path.join(log_dir,"Webmonitoring_flask" + datetime.now().strftime('_monitoring_log_%Y_%m_%d_%I_%M_%S.log'))
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',filename=logfile, level=logging.INFO)
-    sprint('-------------------------------- START ---------------------------------')
-    logging.info('< --------- START ---------------------- >')
 
     app.logger.info("Logging is set up.")
 
+    
 
 
-    app.run(debug=True)
+
+    app.run()
     
 
 
