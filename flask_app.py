@@ -16,6 +16,7 @@ from threading import Timer
 from logging.handlers import RotatingFileHandler
 
 
+
 app = Flask(__name__)
 base_dir_app_log="/Users/upakalapati/Downloads/crafts_demo_logs/"
 app.logger.setLevel(logging.DEBUG)  # use the native logger of flask
