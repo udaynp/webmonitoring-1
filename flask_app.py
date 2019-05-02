@@ -159,8 +159,8 @@ def mysql_insert(url, firstevent_url, last_update_time):
     cursor.execute(query)
     connection.commit()
 
-    sprint(" for Url " + url + "   response time is   :" + str(firstevent_url) + "Mysql insertion is done \n")
-    app.logger.info(" for Url " + url + "   response time is   :" + str(firstevent_url) + "Mysql insertion is done \n")
+    sprint(" for Url " + url + "   response time is   :" + str(firstevent_url) + "\nMysql insertion is done \n")
+    app.logger.info(" for Url " + url + "   response time is   :" + str(firstevent_url) + "\nMysql insertion is done \n")
 
 def threshold_check(url,firstevent_url):
     if firstevent_url > 0.3:
@@ -172,8 +172,8 @@ def threshold_check(url,firstevent_url):
         post_github_issue(title=post_message, body=url + "   " + post_message)
 
     else:
-        sprint(" Url " + url + " response is looks good ")
-        app.logger.info(" Url " + url + " response is looks good ")
+        sprint(" \nUrl " + url + " response is looks good \n")
+        app.logger.info(" \nUrl " + url + " response is looks good \n")
 
 
 def flask_thread_rend(firstevent_url1,firstevent_url2,last_update_time):
@@ -191,7 +191,7 @@ def flask_thread_rend(firstevent_url1,firstevent_url2,last_update_time):
 @app.route("/", methods=['GET'])
 def monitoring_whole():
 
-    logging.info(" response test is loading ")
+    app.logger.info (" \n ***************response test is loading *************\n")
     firstevent_url1 = thread_call_url(url_1)
     firstevent_url2 = thread_call_url(url_2)
     last_update_time = thread_call_time()
