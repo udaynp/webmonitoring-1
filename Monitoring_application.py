@@ -192,8 +192,10 @@ def status_check_url( url, timeout=5 ):
     except urllib2.URLError as e:
         return False
     except socket.timeout as e:
+
+        sprint(" \nUrl " + url + " is not running and Main App is down \n")
+        app.logger.info(" \nUrl " + url + " is not running and Main App is down  \n")
         return False
-        sprint False
 
 
 
@@ -220,9 +222,10 @@ def monitoring_whole():
 
 
             else:
-                firstevent_url1 = "None or False  as  APP is Down"
+                firstevent_url1 = "9999999999999"
                 last_update_time = strftime("%Y-%m-%d %H:%M:%S")
                 sprint('There was a problem: with main app ')
+                mysql_insert(url_1, firstevent_url1, last_update_time)
                 app.logger.info('There was a problem in Main APP please check the APP immidiatley:')
 
             return render_template(

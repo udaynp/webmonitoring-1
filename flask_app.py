@@ -189,17 +189,56 @@ def flask_thread_rend(firstevent_url1,firstevent_url2,last_update_time):
         )
 
 
+def status_check_url( url, timeout=5 ):
+    try:
+        return urllib2.urlopen(url,timeout=timeout).getcode()
+    except urllib2.URLError as e:
+        return False
+    except socket.timeout as e:
+
+        sprint(" \nUrl " + url + " is not running and Main App is down \n")
+        app.logger.info(" \nUrl " + url + " is not running and Main App is down  \n")
+        return False
+
+
+
 @app.route("/", methods=['GET'])
 def monitoring_whole():
 
     app.logger.info (" \n ***************response test is loading *************\n")
-    firstevent_url1 = thread_call_url(url_1)
-    firstevent_url2 = thread_call_url(url_2)
-    last_update_time = thread_call_time()
-    mysql_insert(url_1, firstevent_url1, last_update_time)
-    mysql_insert(url_2, firstevent_url2, last_update_time)
-    threshold_check(url_1, firstevent_url1)
-    threshold_check(url_2, firstevent_url2)
+    status_app_url_1 = status_check_url(url_1)
+    status_app_url_2 = status_check_url(url_2)
+    if status_app_url_1 == 200:
+            firstevent_url1 = thread_call_url(url_1)
+            last_update_time = thread_call_time()
+            mysql_insert(url_1, firstevent_url1, last_update_time)
+            threshold_check(url_1, firstevent_url1)
+
+    else:
+
+            firstevent_url1 = "99999"
+            last_update_time = strftime("%Y-%m-%d %H:%M:%S")
+            sprint('There was a problem: with main app ')
+            mysql_insert(url_1, firstevent_url1, last_update_time)
+            app.logger.info('There was a problem in {0}  please check the Url immidiatley:'.format(url_1))
+
+    if status_app_url_2 == 200:
+
+            firstevent_url2 = thread_call_url(url_2)
+            last_update_time = thread_call_time()
+
+            mysql_insert(url_2, firstevent_url2, last_update_time)
+
+            threshold_check(url_2, firstevent_url2)
+
+    else:
+
+        firstevent_url2 = "99999"
+        last_update_time = strftime("%Y-%m-%d %H:%M:%S")
+        sprint('There was a problem: with main app ')
+        mysql_insert(url_2, firstevent_url2, last_update_time)
+        app.logger.info('There was a problem in {0}  please check the Url immidiatley:'.format(url_2))
+
     #flask_thread_rend(firstevent_url1,firstevent_url2,last_update_time)
 
     return render_template(

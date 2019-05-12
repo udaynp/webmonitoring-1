@@ -17,3 +17,6 @@ https://networklore.com/start-task-with-flask/
 nohup sh crafts_demo_site.sh > /tmp/crafts_demo_site.out 2>&1 &
 
 tail -f /tmp/main_flask_app.out
+
+
+FLASK_APP=monitoring_application.py flask run --host 127.0.0.1 --port 8089
