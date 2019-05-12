@@ -84,21 +84,7 @@ def shell_command(query, IsShell=None):
         return run_process.returncode, run_output, run_error
 
 
-def post_github_issue(title, body=None, labels=["bug"]):
-    '''https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/'''
 
-    payload = {"title": title, "body": body, "labels": labels}
-    login = requests.post('https://api.github.com/' + 'repos/' + username + '/' + repo_name + '/issues',
-                          auth=(username, token), data=json.dumps(payload))
-    print(login.json())
-    if login.status_code == 201:
-        print ('Successfully created Issue {0:s}'.format(title))
-        app.logger.info('Successfully created Issue for Main APP {0:s}'.format(title))
-    else:
-        print ('Could not create Issue {0:s}'.format(title))
-        app.logger.info('Could not create Issue for for Main APP {0:s}'.format(title))
-        print ('Response:', login.content)
-        app.logger.info('Response:', login.content)
 
 
 def slack_messages(slack_m):
@@ -165,7 +151,6 @@ def threshold_check(url, firstevent_url):
         slack_data = {"text": url + "   " + post_message}
         slack_messages(slack_data)
 
-        post_github_issue(title=post_message, body=url + "   " + post_message)
 
     else:
         sprint(" \nUrl " + url + " response is looks good \n")
@@ -204,35 +189,40 @@ def status_check_url( url, timeout=5 ):
 
 @app.route("/", methods=['GET'])
 def monitoring_whole():
-    status_app=status_check_url(url_1)
+    status_app_url=status_check_url(url_1)
 
 
     try:
 
-            if status_app == 200:
-
-                    app.logger.info(" \n ***************Main APP monitoring is starting test is loading *************\n")
-                    firstevent_url1 = thread_call_url(url_1)
-                    last_update_time = thread_call_time()
-                    mysql_insert(url_1, firstevent_url1, last_update_time)
-
-                    threshold_check(url_1, firstevent_url1)
+            if status_app_url == 200:
+                firstevent_url1 = thread_call_url(url_1)
+                last_update_time = thread_call_time()
+                mysql_insert(url_1, firstevent_url1, last_update_time)
+                threshold_check(url_1, firstevent_url1)
 
                     # flask_thread_rend(firstevent_url1,firstevent_url2,last_update_time)
 
 
             else:
-                firstevent_url1 = "9999999999999"
+                firstevent_url1 = "99999"
                 last_update_time = strftime("%Y-%m-%d %H:%M:%S")
                 sprint('There was a problem: with main app ')
                 status_app = "Down"
                 mysql_insert(url_1, firstevent_url1, last_update_time)
+                threshold_check(url_1, firstevent_url1)
                 app.logger.info('There was a problem in Main APP please check the APP immidiatley:')
 
+
+
+
+
+            app.logger.info("status_app_url is {0}.".format(status_app_url))
+
+            app.logger.info("response time is for firstevent_url1 is {0}.".format(firstevent_url1))
             return render_template(
                 'app_monitoring.html',
                 time_elapsed=firstevent_url1,
-                status_app=status_app,
+                status_app=status_app_url,
                 url_1=url_1,
                 last_update_time=last_update_time
 
@@ -245,7 +235,7 @@ def monitoring_whole():
 
 if __name__ == '__main__':
     app.logger.info("Logging is set up.")
-    app.logger.info("LMonitoring is starting.")
+    app.logger.info("Monitoring is starting.")
 
     app.run()
 

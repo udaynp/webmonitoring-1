@@ -14,6 +14,8 @@ import threading
 import queue
 from threading import Timer
 from logging.handlers import RotatingFileHandler
+import urllib2
+import socket
 
 
 
@@ -208,6 +210,8 @@ def monitoring_whole():
     app.logger.info (" \n ***************response test is loading *************\n")
     status_app_url_1 = status_check_url(url_1)
     status_app_url_2 = status_check_url(url_2)
+    #status_app_url_1 = 200
+    #status_app_url_2 = 400
     if status_app_url_1 == 200:
             firstevent_url1 = thread_call_url(url_1)
             last_update_time = thread_call_time()
@@ -256,11 +260,6 @@ def monitoring_whole():
 if __name__ == '__main__':
 
     app.logger.info("Logging is set up.")
-
-    
-
-
-
     app.run()
     
 
