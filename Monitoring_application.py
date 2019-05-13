@@ -144,18 +144,26 @@ def mysql_insert(url, firstevent_url, last_update_time):
         " for Url " + url + "   response time is   :" + str(firstevent_url) + "\nMysql insertion is done \n")
 
 
-def threshold_check(url, firstevent_url):
-    if firstevent_url > 0.3:
+def threshold_check(url, firstevent_url,status_app_url):
 
-        post_message = "response time is more than threshold please check the web site performance and resources"
-        slack_data = {"text": url + "   " + post_message}
-        slack_messages(slack_data)
+    if status_app_url == 200:
+            if firstevent_url > 0.3:
+
+                post_message = "response time is more than threshold please check the web site performance and resources"
+                slack_data = {"text": url + "   " + post_message}
+                slack_messages(slack_data)
+
+
+            else:
+                sprint(" \nUrl " + url + " response is looks good \n")
+                app.logger.info(" \nUrl " + url + " response is looks good \n")
+
 
 
     else:
-        sprint(" \nUrl " + url + " response is looks good \n")
-        app.logger.info(" \nUrl " + url + " response is looks good \n")
-
+                post_message = "Main pplication is Down Please check application and resources "
+                slack_data = {"text": url + "   " + post_message}
+                slack_messages(slack_data)
 
 def flask_thread_rend(firstevent_url1, firstevent_url2, last_update_time):
     return render_template(
@@ -198,10 +206,9 @@ def monitoring_whole():
                 firstevent_url1 = thread_call_url(url_1)
                 last_update_time = thread_call_time()
                 mysql_insert(url_1, firstevent_url1, last_update_time)
-                threshold_check(url_1, firstevent_url1)
+
 
                     # flask_thread_rend(firstevent_url1,firstevent_url2,last_update_time)
-
 
             else:
                 firstevent_url1 = "99999"
@@ -209,16 +216,16 @@ def monitoring_whole():
                 sprint('There was a problem: with main app ')
                 status_app = "Down"
                 mysql_insert(url_1, firstevent_url1, last_update_time)
-                threshold_check(url_1, firstevent_url1)
+
                 app.logger.info('There was a problem in Main APP please check the APP immidiatley:')
-
-
-
 
 
             app.logger.info("status_app_url is {0}.".format(status_app_url))
 
+
             app.logger.info("response time is for firstevent_url1 is {0}.".format(firstevent_url1))
+
+            threshold_check(url_1, firstevent_url1,status_app_url)
             return render_template(
                 'app_monitoring.html',
                 time_elapsed=firstevent_url1,
