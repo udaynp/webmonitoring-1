@@ -214,7 +214,7 @@ def monitoring_whole():
                 firstevent_url1 = "99999"
                 last_update_time = strftime("%Y-%m-%d %H:%M:%S")
                 sprint('There was a problem: with main app ')
-                status_app = "Down"
+                status_app_url = "Down"
                 mysql_insert(url_1, firstevent_url1, last_update_time)
 
                 app.logger.info('There was a problem in Main APP please check the APP immidiatley:')
