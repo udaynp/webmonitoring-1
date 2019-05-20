@@ -71,8 +71,12 @@ app.config['DEBUG'] = True
 
 url_1 = "https://www.intuit.com"
 url_2 = "https://en.wikipedia.org/wiki/Intuit"
+url_3 = "https://www.google.com"
  # Set the webhook_url to the one provided by Slack when you create the webhook at https://my.slack.com/services/new/incoming-webhook/
-webhook_url_final = 'https://hooks.slack.com/services/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'
+#webhook_url_final = 'https://hooks.slack.com/services/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'
+#webhook_url_final = 'https://hooks.slack.com/services/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'
+webhook_url_final = 'https://hooks.slack.com/services/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'
+
 responseissue = " Site response crossed threshold"
 
 
@@ -165,18 +169,26 @@ def mysql_insert(url, firstevent_url, last_update_time):
     sprint(" for Url " + url + "   response time is   :" + str(firstevent_url) + "\nMysql insertion is done \n")
     app.logger.info(" for Url " + url + "   response time is   :" + str(firstevent_url) + "\nMysql insertion is done \n")
 
-def threshold_check(url,firstevent_url):
-    if firstevent_url > 0.3:
+def threshold_check(url,firstevent_url,status_app_url):
+    if status_app_url == 200:
 
-        post_message = "response time is more than threshold please check the web site performance and resources"
-        slack_data = {"text": url + "   " + post_message}
-        slack_messages(slack_data)
+                if firstevent_url > 0.3:
 
-        post_github_issue(title=post_message, body=url + "   " + post_message)
+                    post_message = "response time is more than threshold please check the web site performance and resources"
+                    slack_data = {"text": url + "   " + post_message}
+                    slack_messages(slack_data)
+
+                    post_github_issue(title=post_message, body=url + "   " + post_message)
+
+                else:
+                    sprint(" \nUrl " + url + " response is looks good \n")
+                    app.logger.info(" \nUrl " + url + " response is looks good \n")
+
 
     else:
-        sprint(" \nUrl " + url + " response is looks good \n")
-        app.logger.info(" \nUrl " + url + " response is looks good \n")
+                post_message = "{0} is Down Please check the internet and {1}  ".format(url,url)
+                slack_data = {"text": url + "   " + post_message}
+                slack_messages(slack_data)
 
 
 def flask_thread_rend(firstevent_url1,firstevent_url2,last_update_time):
@@ -210,13 +222,14 @@ def monitoring_whole():
     app.logger.info (" \n ***************response test is loading *************\n")
     status_app_url_1 = status_check_url(url_1)
     status_app_url_2 = status_check_url(url_2)
+    status_app_url_3 = status_check_url(url_3)
     #status_app_url_1 = 200
     #status_app_url_2 = 400
     if status_app_url_1 == 200:
             firstevent_url1 = thread_call_url(url_1)
             last_update_time = thread_call_time()
             mysql_insert(url_1, firstevent_url1, last_update_time)
-            threshold_check(url_1, firstevent_url1)
+            threshold_check(url_1, firstevent_url1,status_app_url_1)
 
     else:
 
@@ -233,7 +246,7 @@ def monitoring_whole():
 
             mysql_insert(url_2, firstevent_url2, last_update_time)
 
-            threshold_check(url_2, firstevent_url2)
+            threshold_check(url_2, firstevent_url2,status_app_url_2)
 
     else:
 
@@ -243,23 +256,41 @@ def monitoring_whole():
         mysql_insert(url_2, firstevent_url2, last_update_time)
         app.logger.info('There was a problem in {0}  please check the Url immidiatley:'.format(url_2))
 
+    if status_app_url_3 == 200:
+
+            firstevent_url3 = thread_call_url(url_3)
+            last_update_time = thread_call_time()
+
+            mysql_insert(url_3, firstevent_url3, last_update_time)
+
+            threshold_check(url_3, firstevent_url3,status_app_url_3)
+
+
+    else:
+
+        firstevent_url3 = "99999"
+        last_update_time = strftime("%Y-%m-%d %H:%M:%S")
+        sprint('There was a problem: with main app ')
+        mysql_insert(url_3, firstevent_url3, last_update_time)
+        app.logger.info('There was a problem in {0}  please check the Url immidiatley:'.format(url_3))
+
     #flask_thread_rend(firstevent_url1,firstevent_url2,last_update_time)
 
     return render_template(
         'html_format.html',
         time_elapsed = firstevent_url1,
         time_elapsed_1 = firstevent_url2,
+        time_elapsed_2=firstevent_url3,
         url_1=url_1,
         url_2=url_2,
+        url_3=url_3,
         last_update_time = last_update_time
         )
-
-
-
 
 if __name__ == '__main__':
 
     app.logger.info("Logging is set up.")
+    app.logger.info("Monitoring of Url {0}  and Url {1} is starting.".format(url_1,url_2))
     app.run()
     
 

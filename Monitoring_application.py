@@ -22,7 +22,7 @@ base_dir_app_log = "/Users/upakalapati/Downloads/crafts_demo_logs/"
 app.logger.setLevel(logging.DEBUG)  # use the native logger of flask
 app.logger.disabled = False
 handler = logging.handlers.RotatingFileHandler(
-    base_dir_app_log + datetime.now().strftime('web_monitoring_log_%Y_%m_%d_%I_%M_%S.log'),
+    base_dir_app_log + datetime.now().strftime('APP_Monitoring_log_%Y_%m_%d_%I_%M_%S.log'),
     'a',
     maxBytes=1024 * 1024 * 100,
     backupCount=20
@@ -147,7 +147,7 @@ def mysql_insert(url, firstevent_url, last_update_time):
 def threshold_check(url, firstevent_url,status_app_url):
 
     if status_app_url == 200:
-            if firstevent_url > 0.3:
+            if firstevent_url > 0.6:
 
                 post_message = "response time is more than threshold please check the web site performance and resources"
                 slack_data = {"text": url + "   " + post_message}
@@ -161,7 +161,7 @@ def threshold_check(url, firstevent_url,status_app_url):
 
 
     else:
-                post_message = "Main pplication is Down Please check application and resources "
+                post_message = "Main application is Down Please check application and resources "
                 slack_data = {"text": url + "   " + post_message}
                 slack_messages(slack_data)
 
@@ -242,7 +242,7 @@ def monitoring_whole():
 
 if __name__ == '__main__':
     app.logger.info("Logging is set up.")
-    app.logger.info("Monitoring is starting.")
+    app.logger.info("Monitoring of App {0} is starting.".format(url_1))
 
     app.run()
 

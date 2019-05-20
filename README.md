@@ -19,4 +19,15 @@ nohup sh crafts_demo_site.sh > /tmp/crafts_demo_site.out 2>&1 &
 tail -f /tmp/main_flask_app.out
 
 
+Only Run for app monitoring
 FLASK_APP=monitoring_application.py flask run --host 127.0.0.1 --port 8089
+
+
+Command to run
+nohup sh /Users/upakalapati/Documents/GitHub/webmonitoring/crafts_demo_site.sh > /tmp/crafts_demo_site.out 2>&1 &
+
+
+Log directory
+/Users/upakalapati/Documents/GitHub/webmonitoring
+
+https://hooks.slack.com/services/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
