@@ -18,7 +18,7 @@ import urllib2
 import socket
 
 
-
+# App logging configuration setup
 app = Flask(__name__)
 base_dir_app_log="/Users/upakalapati/Downloads/crafts_demo_logs/"
 app.logger.setLevel(logging.DEBUG)  # use the native logger of flask
@@ -45,6 +45,8 @@ https://buildmedia.readthedocs.org/media/pdf/flask-docs-ja/latest/flask-docs-ja.
 
 logging.basicConfig(level=logging.INFO)
 
+
+#Git hub username and token ,This can be in config file
 username = 'udayradhika'
 token = 'f7adca866868c89ff7f4518ba1a58274d939f17e'
 #token = 'coppergate51'
@@ -52,13 +54,9 @@ token = 'f7adca866868c89ff7f4518ba1a58274d939f17e'
 headers = {'Authorization': 'token ' + token}
 repo_name = 'webmonitoring'
 
-
-
-
-
 #app.logger.setLevel(logging.INFO)
 
-
+# my sql Configuration
 mysql = MySQL()
 # MySQL configurations
 app.config['MYSQL_DATABASE_USER'] = 'root'
@@ -71,7 +69,12 @@ app.config['DEBUG'] = True
 
 url_1 = "https://www.intuit.com"
 url_2 = "https://en.wikipedia.org/wiki/Intuit"
+<<<<<<< HEAD
 url_3 = "https://www.google.com"
+=======
+
+# Slack settings
+>>>>>>> 48f984f00729fdeb7504bd31df14ceda23361bdd
  # Set the webhook_url to the one provided by Slack when you create the webhook at https://my.slack.com/services/new/incoming-webhook/
 #webhook_url_final = 'https://hooks.slack.com/services/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'
 #webhook_url_final = 'https://hooks.slack.com/services/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'
@@ -79,14 +82,11 @@ webhook_url_final = 'https://hooks.slack.com/services/THQU62J01/BJECC9U58/rIMdxN
 
 responseissue = " Site response crossed threshold"
 
-
-
-
+#changing the Print function with date and time
 def sprint(message):
     print ("{0} {1}".format(datetime.now().strftime('%Y-%m-%d %H:%M:%S'),str(message)))
 
-
-
+#shell commands    
 def shell_command(query,IsShell=None):
       #logging.info ("< ------ Running Command ------ >")
       sprint ("< ------ Running Command ------ >")
@@ -97,7 +97,7 @@ def shell_command(query,IsShell=None):
          run_output, run_error = run_process.communicate()
          return run_process.returncode, run_output, run_error
 
-
+# git hub issue looging
 def post_github_issue(title, body=None, labels=["bug"]):
       '''https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/'''
 
@@ -114,6 +114,7 @@ def post_github_issue(title, body=None, labels=["bug"]):
         app.logger.info ('Response:', login.content)
 
 
+# Posting slack messeges
 def slack_messages(slack_m):
   response = requests.post(
        webhook_url_final, data=json.dumps(slack_m),
@@ -126,11 +127,13 @@ def slack_messages(slack_m):
     )
 
 
+#thread function     
 def url_resp(url, q):
     firstevent_url = requests.get(url).elapsed.total_seconds()
     q.put(firstevent_url)
 
 
+#time thread call    
 def time_now(test, q):
     last_update_time = strftime("%Y-%m-%d %H:%M:%S")
 
@@ -157,6 +160,7 @@ def thread_call_time():
     app.logger.info(" Time when response time collected " + str(last_update_time)+"\n")
     return last_update_time
 
+#My sql insertion
 def mysql_insert(url, firstevent_url, last_update_time):
 
     connection = mysql.get_db()
@@ -169,6 +173,7 @@ def mysql_insert(url, firstevent_url, last_update_time):
     sprint(" for Url " + url + "   response time is   :" + str(firstevent_url) + "\nMysql insertion is done \n")
     app.logger.info(" for Url " + url + "   response time is   :" + str(firstevent_url) + "\nMysql insertion is done \n")
 
+<<<<<<< HEAD
 def threshold_check(url,firstevent_url,status_app_url):
     if status_app_url == 200:
 
@@ -177,6 +182,11 @@ def threshold_check(url,firstevent_url,status_app_url):
                     post_message = "response time is more than threshold please check the web site performance and resources"
                     slack_data = {"text": url + "   " + post_message}
                     slack_messages(slack_data)
+=======
+#threshold check
+def threshold_check(url,firstevent_url):
+    if firstevent_url > 0.3:
+>>>>>>> 48f984f00729fdeb7504bd31df14ceda23361bdd
 
                     post_github_issue(title=post_message, body=url + "   " + post_message)
 
