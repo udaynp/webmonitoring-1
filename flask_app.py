@@ -74,7 +74,7 @@ url_3 = "https://www.google.com"
 =======
 
 # Slack settings
->>>>>>> 48f984f00729fdeb7504bd31df14ceda23361bdd
+
  # Set the webhook_url to the one provided by Slack when you create the webhook at https://my.slack.com/services/new/incoming-webhook/
 #webhook_url_final = 'https://hooks.slack.com/services/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'
 #webhook_url_final = 'https://hooks.slack.com/services/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'
@@ -173,7 +173,7 @@ def mysql_insert(url, firstevent_url, last_update_time):
     sprint(" for Url " + url + "   response time is   :" + str(firstevent_url) + "\nMysql insertion is done \n")
     app.logger.info(" for Url " + url + "   response time is   :" + str(firstevent_url) + "\nMysql insertion is done \n")
 
-<<<<<<< HEAD
+
 def threshold_check(url,firstevent_url,status_app_url):
     if status_app_url == 200:
 
@@ -182,11 +182,11 @@ def threshold_check(url,firstevent_url,status_app_url):
                     post_message = "response time is more than threshold please check the web site performance and resources"
                     slack_data = {"text": url + "   " + post_message}
                     slack_messages(slack_data)
-=======
+
 #threshold check
 def threshold_check(url,firstevent_url):
     if firstevent_url > 0.3:
->>>>>>> 48f984f00729fdeb7504bd31df14ceda23361bdd
+
 
                     post_github_issue(title=post_message, body=url + "   " + post_message)
 
