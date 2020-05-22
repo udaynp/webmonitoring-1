@@ -24,7 +24,7 @@ FLASK_APP=monitoring_application.py flask run --host 127.0.0.1 --port 8089
 
 
 Command to run
-nohup sh /Users/upakalapati/Documents/GitHub/webmonitoring/crafts_demo_site.sh > /tmp/crafts_demo_site.out 2>&1 &
+nohup sh /Users/uday/Documents/GitHub/webmonitoring/crafts_demo_site.sh > /tmp/crafts_demo_site.out 2>&1 &
 
 
 Log directory
