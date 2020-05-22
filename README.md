@@ -28,6 +28,6 @@ nohup sh /Users/uday/Documents/GitHub/webmonitoring/crafts_demo_site.sh > /tmp/c
 
 
 Log directory
-/Users/upakalapati/Documents/GitHub/webmonitoring
+/Users/uday/Documents/GitHub/webmonitoring
 
 https://hooks.slack.com/services/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
